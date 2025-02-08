@@ -19,7 +19,7 @@ def read_s1_column(file_path):
     return data
 
 # Συνάρτηση Sample Entropy
-def sample_entropy(signal, m=2, r=0.2):
+def sample_entropy(signal, m=3, r=0.15):
     N = len(signal)
     r *= np.std(signal)  # Καθορισμός του r σε σχέση με την τυπική απόκλιση
     
