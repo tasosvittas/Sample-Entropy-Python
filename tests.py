@@ -13,6 +13,11 @@ term_files = sorted(os.listdir(term_folder))[:10]
 def read_s1_column(file_path):
     try:
         data = np.loadtxt(file_path, usecols=3)  # 4th column (S1 channel)
+        if len(data) > 360:  # Ensure enough data points before slicing
+            data = data[181:-181]  # Ignore the first and last 180 values
+        else:
+            print(f"Skipping {file_path} due to insufficient data after trimming.")
+            return np.array([])
         return data
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
