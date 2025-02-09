@@ -67,9 +67,16 @@ def segment_epochs(signal, fs, epoch_duration=2, overlap=0):
 fs = 256  # Example sampling frequency
 preterm_entropy = []
 term_entropy = []
+preterm_non_overlap_entropy = []
+term_non_overlap_entropy = []
+preterm_overlap_entropy = []
+term_overlap_entropy = []
 
 print("\nSample Entropy, Non-Overlapping and Overlapping Epochs for Preterm and Term Files:")
-for category, folder, files, entropy_list in [("Preterm", preterm_folder, preterm_files, preterm_entropy), ("Term", term_folder, term_files, term_entropy)]:
+for category, folder, files, entropy_list, non_overlap_list, overlap_list in [
+    ("Preterm", preterm_folder, preterm_files, preterm_entropy, preterm_non_overlap_entropy, preterm_overlap_entropy),
+    ("Term", term_folder, term_files, term_entropy, term_non_overlap_entropy, term_overlap_entropy)]:
+    
     for file in files:
         file_path = os.path.join(folder, file)
         signal = read_s1_column(file_path)
@@ -85,21 +92,48 @@ for category, folder, files, entropy_list in [("Preterm", preterm_folder, preter
         non_overlap_epochs = segment_epochs(signal, fs, epoch_duration=2, overlap=0)
         non_overlap_entropy = [sample_entropy(epoch) for epoch in non_overlap_epochs]
         avg_non_overlap_entropy = np.nanmean(non_overlap_entropy) if len(non_overlap_entropy) > 0 else np.nan
+        non_overlap_list.append(avg_non_overlap_entropy)
         
         # Epoching with overlap
         overlap_epochs = segment_epochs(signal, fs, epoch_duration=2, overlap=1)
         overlap_entropy = [sample_entropy(epoch) for epoch in overlap_epochs]
         avg_overlap_entropy = np.nanmean(overlap_entropy) if len(overlap_entropy) > 0 else np.nan
+        overlap_list.append(avg_overlap_entropy)
         
+        # Print results
         print(f"{category} - {file}: sE = {entropy_value:.4f}, Non-Overlap sE = {avg_non_overlap_entropy:.4f}, Overlap sE = {avg_overlap_entropy:.4f}")
-
-# Plotting Sample Entropy for Preterm and Term
+        
+# Plotting Sample Entropy
 plt.figure(figsize=(10, 5))
 plt.bar(preterm_files, preterm_entropy, color='blue', label='Preterm')
 plt.bar(term_files, term_entropy, color='green', label='Term')
 plt.xlabel('Files')
 plt.ylabel('Sample Entropy')
 plt.title('Sample Entropy for Preterm and Term Files')
+plt.xticks(rotation=45, ha="right")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Plotting Non-Overlapping Epoch Entropy
+plt.figure(figsize=(10, 5))
+plt.bar(preterm_files, preterm_non_overlap_entropy, color='blue', label='Preterm')
+plt.bar(term_files, term_non_overlap_entropy, color='green', label='Term')
+plt.xlabel('Files')
+plt.ylabel('Non-Overlapping Epoch Entropy')
+plt.title('Non-Overlapping Epoch Entropy for Preterm and Term Files')
+plt.xticks(rotation=45, ha="right")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Plotting Overlapping Epoch Entropy
+plt.figure(figsize=(10, 5))
+plt.bar(preterm_files, preterm_overlap_entropy, color='blue', label='Preterm')
+plt.bar(term_files, term_overlap_entropy, color='green', label='Term')
+plt.xlabel('Files')
+plt.ylabel('Overlapping Epoch Entropy')
+plt.title('Overlapping Epoch Entropy for Preterm and Term Files')
 plt.xticks(rotation=45, ha="right")
 plt.legend()
 plt.tight_layout()
