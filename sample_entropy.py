@@ -52,13 +52,11 @@ def sample_entropy(signal, m=3, r=0.15):
 
     return -np.log(phi_m1 / phi_m)
 
-# Initialize lists to store entropy values and filenames
 preterm_entropy = []
 preterm_filename = []
 term_entropy = []
 term_filename = []
 
-# Compute Sample Entropy for preterm files
 print("\nSample Entropy for Preterm Files:")
 for file in preterm_files:
     file_path = os.path.join(preterm_folder, file)
