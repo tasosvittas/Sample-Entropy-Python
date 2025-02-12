@@ -15,32 +15,26 @@ def read_s1_column(file_path):
     data = data[181:-181]  
     return data
 
-# Function to compute Sample Entropy
 def sample_entropy(signal, m=3, r=0.15):
     N = len(signal)
     if N == 0:
-        return np.nan  # Avoid errors with empty signals
+        return np.nan  
     
-    r *= np.std(signal)  # Set r in relation to standard deviation
+    r *= np.std(signal) 
     def _phi(m):
-        # Create embedding vectors
         X = np.array([signal[i:i + m] for i in range(N - m + 1)])
-        # Compute pairwise Chebyshev distances
         distances = pdist(X, metric='chebyshev')
-        # Count the number of distances <= r
         count = np.sum(distances <= r)
-        # Normalize by the number of possible pairs
         return count / (N - m + 1)
         
-    phi_m = _phi(m)  # phi(m)
-    phi_m1 = _phi(m + 1)  # phi(m + 1)
+    phi_m = _phi(m)  #(m)
+    phi_m1 = _phi(m + 1)  #(m + 1)
 
     if phi_m == 0 or phi_m1 == 0:
-        return np.nan  # Avoid log(0)
+        return np.nan 
 
     return -np.log(phi_m1 / phi_m)
 
-# Function for epoching EEG signals
 def segment_epochs(signal, fs, epoch_duration=2, overlap=0):
     epoch_length = int(epoch_duration * fs)
     overlap_length = int(overlap * fs) if overlap > 0 else epoch_length
@@ -49,7 +43,7 @@ def segment_epochs(signal, fs, epoch_duration=2, overlap=0):
     epochs = np.array([signal[i * overlap_length:i * overlap_length + epoch_length] for i in range(num_epochs)])
     return epochs
 
-fs = 256  # Example sampling frequency
+fs = 256  
 preterm_entropy = []
 term_entropy = []
 preterm_non_overlap_entropy = []
@@ -87,6 +81,24 @@ for category, folder, files, entropy_list, non_overlap_list, overlap_list in [
         
         print(f"{category} - {file}: sE = {entropy_value:.4f}, Non-Overlap sE = {avg_non_overlap_entropy:.4f}, Overlap sE = {avg_overlap_entropy:.4f}")
         
+      
+
+def compute_average_entropy(entropy_list):
+    return np.nanmean(entropy_list) if len(entropy_list) > 0 else np.nan
+
+avg_preterm_entropy = compute_average_entropy(preterm_entropy)
+avg_term_entropy = compute_average_entropy(term_entropy)
+
+avg_preterm_non_overlap_entropy = compute_average_entropy(preterm_non_overlap_entropy)
+avg_term_non_overlap_entropy = compute_average_entropy(term_non_overlap_entropy)
+
+avg_preterm_overlap_entropy = compute_average_entropy(preterm_overlap_entropy)
+avg_term_overlap_entropy = compute_average_entropy(term_overlap_entropy)
+
+print("\nAverage Entropy Values:")
+print(f"Preterm - Sample Entropy: {avg_preterm_entropy:.4f}, Non-Overlap Epoch Entropy: {avg_preterm_non_overlap_entropy:.4f}, Overlap Epoch Entropy: {avg_preterm_overlap_entropy:.4f}")
+print(f"Term - Sample Entropy: {avg_term_entropy:.4f}, Non-Overlap Epoch Entropy: {avg_term_non_overlap_entropy:.4f}, Overlap Epoch Entropy: {avg_term_overlap_entropy:.4f}")
+
 #Sample Entropy
 plt.figure(figsize=(10, 5))
 plt.bar(preterm_files, preterm_entropy, color='blue', label='Preterm')
