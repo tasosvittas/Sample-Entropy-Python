@@ -1,69 +1,58 @@
 # EHG Signal Processing - Term vs Preterm Classification
 
 ## Project Overview
-This repository contains data and scripts related to the analysis of **Electrohysterogram (EHG) signals** from the **Term-Preterm EHG Database (TPEHG DB)**. The goal is to apply **entropy-based methods** to distinguish between term and preterm pregnancies using nonlinear signal processing techniques.
 
-## Dataset
-The dataset used in this project is sourced from the **PhysioNet TPEHG DB**: [PhysioNet TPEHG DB](https://www.physionet.org/physiobank/database/tpehgdb/).
+This project focuses on analyzing uterine electromyography (EMG) signals from the TPEHG DB dataset. The dataset contains 300 uterine EMG records from 300 pregnancies, categorized into term and preterm deliveries. The analysis involves calculating the **Sample Entropy** of the filtered signals, specifically focusing on the first channel (S1), which has been filtered using a 4th-order Butterworth filter with a passband from 0.3 Hz to 3 Hz.
 
-### **Dataset Structure**
-- **EHGs/** → Contains the extracted `.dat` files for analysis.
-  - **preterm/** → Contains signals from pregnancies that ended in preterm birth.
-  - **term/** → Contains signals from pregnancies that resulted in full-term birth.
-- **2015 - Acharya - Entropy review.pdf** → Reference paper on entropy-based signal analysis.
+For this analysis, **only 20 files** from the dataset are used:
+- **10 files** from the **term deliveries** group.
+- **10 files** from the **preterm deliveries** group.
 
-### **Data Description**
-- **300 uterine EMG records** (one per pregnancy).
-- **262 records** correspond to **term deliveries** (>37 weeks).
-- **38 records** correspond to **preterm deliveries** (≤37 weeks).
-- Each record contains **three channels** recorded from four electrodes:
-  - **S1 = E2 – E1** (First channel)
-  - **S2 = E2 – E3** (Second channel)
-  - **S3 = E4 – E3** (Third channel)
-- Sampling rate: **20 Hz** with **16-bit resolution**.
+The project includes two main Python scripts:
+1. **`sample_entropy.py`**: Computes the sample entropy for preterm and term signals, both for the entire signal and for segmented epochs (with and without overlap).
+2. **`signals_read.py`**: Reads and visualizes the S1 channel signals from the dataset.
 
-### **Filtered Signals**
-Each channel is available in filtered and unfiltered formats:
-- **0.08 Hz – 4 Hz**
-- **0.3 Hz – 3 Hz (Used in this analysis)**
-- **0.3 Hz – 4 Hz**
+## Dataset Description
 
-## Methodology
-### **1. Preprocessing**
-- Extracting the **S1 channel** from each file.
-- Filtering signals using **Butterworth band-pass filter (0.3 Hz – 3 Hz)**.
-- Removing the first and last **180 seconds** due to transient filter effects.
+The TPEHG DB dataset contains 300 uterine EMG records, divided into:
+- **Term deliveries**: 262 records (gestation > 37 weeks).
+- **Preterm deliveries**: 38 records (gestation ≤ 37 weeks).
 
-### **2. Feature Extraction**
-The following nonlinear features are computed:
-- **Sample Entropy (sE):** Measures complexity in the EHG signals.
-- **RMS (Root Mean Square):** Measures signal energy.
-- **MAV (Mean Absolute Value):** Computes signal magnitude.
-- **Variance:** Captures signal variability.
-- **Zero-Crossing Rate (ZCR):** Counts the number of times the signal changes sign.
+Each record consists of three channels (S1, S2, S3) recorded from four electrodes placed around the navel. The signals were digitized at 20 samples per second with 16-bit resolution and filtered using Butterworth filters.
 
-### **3. Visualization**
-- **Bar plots of Sample Entropy** for term and preterm groups.
-- **Comparative analysis** of entropy variations between groups.
+### Filtered Signals
+The dataset provides signals filtered using three different Butterworth filters:
+1. **0.08 Hz to 4 Hz**
+2. **0.3 Hz to 3 Hz**
+3. **0.3 Hz to 4 Hz**
 
-## 🛠 Usage Instructions
-1. **Clone the repository**:
-   ```sh
-   git clone https://github.com/your-username/ehg-analysis.git
-   cd ehg-analysis
-   ```
-2. **Run the Python script for feature extraction and visualization**:
-   ```sh
-   python analyze_ehg.py
-   ```
+In this project, we focus on the **S1 channel** filtered with the **0.3 Hz to 3 Hz** Butterworth filter.
 
-## 📌 Reference
-- **PhysioNet TPEHG Database**: [Link](https://www.physionet.org/physiobank/database/tpehgdb/)
-- **Acharya et al. (2015) - Entropy Review**: Published research on entropy-based analysis.
+### Important
+- The first and last 180 seconds of the filtered signals should be ignored due to transient effects of the filters.
+- The dataset includes clinical information such as pregnancy duration, maternal age, and other relevant details.
 
-## 📝 License
-This project is for academic and research purposes. Please cite the original TPEHG database and Acharya et al. (2015) when using this work.
+## Project Structure
 
----
-💡 **For questions, feel free to reach out or open an issue!** 🚀
+### Files
+- **`signals_read.py`**:
+  - Reads the S1 channel from the dataset.
+  - Plots the S1 signals for both preterm and term records.
+    
+- **`sample_entropy.py`**: 
+  - Computes the sample entropy for the entire signal and for segmented epochs.
+  - Segments the signal into non-overlapping and overlapping epochs.
+  - Plots the sample entropy for preterm and term signals.
 
+## Sample Entropy Calculation
+
+Sample entropy is a measure of the complexity or irregularity of a signal. In this project, we calculate the sample entropy for:
+1. The entire signal.
+2. Non-overlapping epochs (2-second segments).
+3. Overlapping epochs (2-second segments with 1-second overlap).
+
+The results are visualized using bar plots for both preterm and term signals.
+
+### Prerequisites
+- Python 3.x
+- Required Python libraries: `numpy`, `scipy`, `matplotlib`
