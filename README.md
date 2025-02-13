@@ -53,6 +53,11 @@ Sample entropy is a measure of the complexity or irregularity of a signal. In th
 
 The results are visualized using bar plots for both preterm and term signals.
 
-### Prerequisites
+## Prerequisites
 - Python 3.x
 - Required Python libraries: `numpy`, `scipy`, `matplotlib`
+
+## Output
+![sampleentropy](https://github.com/user-attachments/assets/4aa02156-7ff4-4782-bb3b-65c665ed2cc4)
+![nover](https://github.com/user-attachments/assets/45518992-9f09-4e4c-b774-9741cbbe52e8)
+![over](https://github.com/user-attachments/assets/07c7e02b-7ec6-4e5d-ab85-52253b1a16dc)
